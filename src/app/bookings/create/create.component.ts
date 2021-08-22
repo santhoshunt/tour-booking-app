@@ -1,6 +1,7 @@
+import { NgForm } from '@angular/forms';
 import { ModalController } from '@ionic/angular';
 import { Place } from './../../places/places.model';
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, ViewChild } from '@angular/core';
 
 @Component({
   selector: 'app-create',
@@ -9,6 +10,7 @@ import { Component, Input, OnInit } from '@angular/core';
 })
 export class CreateComponent implements OnInit {
   @Input() selectedPlace: Place;
+  @ViewChild('f', { static: true }) form: NgForm;
 
   constructor(private modalCtrl: ModalController) {}
 
@@ -18,10 +20,27 @@ export class CreateComponent implements OnInit {
     this.modalCtrl.dismiss(null, 'cancel');
   }
 
-  onBook() {
+  onBookPlace() {
     this.modalCtrl.dismiss(
-      { message: 'Book button has been clicked' },
+      {
+        bookingData: {
+          firstName: this.form.value.firstName,
+          lastName: this.form.value.lastName,
+          guestNumber: this.form.value.numberOfGuest,
+          startDate: this.form.value.fromDate,
+          endDate: this.form.value.toDate,
+        },
+      },
       'confirm'
     );
+  }
+
+  validateDate() {
+    const startDate = this.form.value.fromDate;
+    const endDate = this.form.value.toDate;
+    if (startDate && endDate) {
+      return startDate < endDate;
+    }
+    return false;
   }
 }

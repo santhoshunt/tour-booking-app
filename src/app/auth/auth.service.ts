@@ -6,14 +6,15 @@ import { Injectable } from '@angular/core';
 })
 export class AuthService {
   private isLoggedIn: boolean;
+  private userId: string;
 
   constructor(private router: Router) {
-    this.isLoggedIn = false;
+    this.isLoggedIn = true;
+    this.userId = 'u1';
   }
 
   login() {
     this.isLoggedIn = true;
-    this.router.navigateByUrl('/places/tabs/discover');
   }
 
   logout() {
@@ -22,5 +23,9 @@ export class AuthService {
 
   userIsAuthenticated(): boolean {
     return this.isLoggedIn;
+  }
+
+  getUserId(): string {
+    return this.userId;
   }
 }

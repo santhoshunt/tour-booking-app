@@ -27,7 +27,7 @@
               },
               {
                 "glob": "**/*.svg",
-                "input": "node_modules/ionicons/dist/ionicons/svg",
+                "input": "node_modules/ionicons/dist/svg",
                 "output": "./svg"
               }
             ],
@@ -122,10 +122,7 @@
         "lint": {
           "builder": "@angular-eslint/builder:lint",
           "options": {
-            "lintFilePatterns": [
-              "src/**/*.ts",
-              "src/**/*.html"
-            ]
+            "lintFilePatterns": ["src/**/*.ts", "src/**/*.html"]
           }
         },
         "e2e": {

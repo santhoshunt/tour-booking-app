@@ -10,7 +10,81 @@
 </ion-header>
 
 <ion-content class="ion-padding ion-text-center">
-  <ion-card> </ion-card>
-  <h4>{{ selectedPlace.description }}</h4>
-  <ion-button color="primary" (click)="onBook()">Book Now !</ion-button>
+  <form (ngSubmit)="onBookPlace()" #f="ngForm">
+    <ion-grid fixed>
+      <ion-row>
+        <ion-col size-sm="6" offset-sm="3">
+          <ion-item>
+            <ion-label position="floating">First Name</ion-label>
+            <ion-input
+              required
+              ngModel
+              type="text"
+              name="firstName"
+            ></ion-input>
+          </ion-item>
+        </ion-col>
+      </ion-row>
+      <ion-row>
+        <ion-col size-sm="6" offset-sm="3">
+          <ion-item>
+            <ion-label position="floating">Last Name</ion-label>
+            <ion-input type="text" ngModel required name="lastName"></ion-input>
+          </ion-item>
+        </ion-col>
+      </ion-row>
+      <ion-row>
+        <ion-col size-sm="6" offset-sm="3">
+          <ion-item>
+            <ion-label position="floating">Number of guests</ion-label>
+            <ion-select value="2" [ngModel]="'2'" name="numberOfGuest">
+              <ion-select-option value="1">1</ion-select-option>
+              <ion-select-option value="2">2</ion-select-option>
+              <ion-select-option value="3">3</ion-select-option>
+            </ion-select>
+          </ion-item>
+        </ion-col>
+      </ion-row>
+      <ion-row>
+        <ion-col offset-sm="3" size-sm="6">
+          <ion-item>
+            <ion-label position="floating">From</ion-label>
+            <ion-datetime
+              displayFormat="DD MM YYYY"
+              pickerFormat="DD MM YYYY"
+              [min]="selectedPlace.fromDate.toISOString()"
+              [max]="selectedPlace.toDate.toISOString()"
+              ngModel
+              name="fromDate"
+              required
+              #fromDateCtrl
+            ></ion-datetime>
+          </ion-item>
+        </ion-col>
+        <ion-col offset-sm="3" size-sm="6">
+          <ion-item>
+            <ion-label position="floating">To</ion-label>
+            <ion-datetime
+              displayFormat="DD MM YYYY"
+              pickerFormat="DD MM YYYY"
+              [min]="fromDateCtrl.value"
+              [max]="selectedPlace.toDate.toISOString()"
+              ngModel
+              name="toDate"
+              required
+            ></ion-datetime>
+          </ion-item>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+    <ion-button
+      color="primary"
+      expand="block"
+      fill="outline"
+      [disabled]="!f.valid || !validateDate()"
+      type="submit"
+    >
+      Book Now !
+    </ion-button>
+  </form>
 </ion-content>
