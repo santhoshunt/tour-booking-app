@@ -1,8 +1,8 @@
 import { Place } from './../../places.model';
 import { PlacesService } from './../../places.service';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { NavController } from '@ionic/angular';
+import { NavController, LoadingController } from '@ionic/angular';
 import { Component, OnInit } from '@angular/core';
 
 @Component({
@@ -17,7 +17,9 @@ export class EditOfferPage implements OnInit {
   constructor(
     private navCtrl: NavController,
     private route: ActivatedRoute,
-    private placesService: PlacesService
+    private placesService: PlacesService,
+    private loadingCtrl: LoadingController,
+    private router: Router
   ) {}
 
   ngOnInit() {
@@ -26,29 +28,25 @@ export class EditOfferPage implements OnInit {
         this.navCtrl.navigateBack('/places/tabs/offers');
         return;
       }
-      this.place = this.placesService.getPlace(paramMap.get('placeId'));
-    });
-    this.form = new FormGroup({
-      title: new FormControl(this.place.name, {
-        updateOn: 'blur',
-        validators: [Validators.required],
-      }),
-      description: new FormControl(this.place.description, {
-        updateOn: 'blur',
-        validators: [Validators.required, Validators.maxLength(150)],
-      }),
-      price: new FormControl(this.place.price, {
-        updateOn: 'blur',
-        validators: [Validators.required, Validators.min(1)],
-      }),
-      dateFrom: new FormControl(null, {
-        updateOn: 'blur',
-        validators: [Validators.required],
-      }),
-      dateTo: new FormControl(null, {
-        updateOn: 'blur',
-        validators: [Validators.required],
-      }),
+      this.placesService
+        .getPlace(paramMap.get('placeId'))
+        .subscribe((place) => {
+          this.place = place;
+          this.form = new FormGroup({
+            title: new FormControl(this.place.title, {
+              updateOn: 'blur',
+              validators: [Validators.required],
+            }),
+            description: new FormControl(this.place.description, {
+              updateOn: 'blur',
+              validators: [Validators.required, Validators.maxLength(150)],
+            }),
+            price: new FormControl(this.place.price, {
+              updateOn: 'blur',
+              validators: [Validators.required, Validators.min(1)],
+            }),
+          });
+        });
     });
   }
 
@@ -57,8 +55,28 @@ export class EditOfferPage implements OnInit {
   }
 
   onEditOffer() {
+    console.log('here');
     if (!this.form.valid) {
+      console.log(this.form);
       return;
     }
+    console.log('here');
+    this.loadingCtrl
+      .create({
+        message: 'Updating Place...',
+      })
+      .then((ele) => ele.present());
+    this.placesService
+      .updateOffer(
+        this.place.id,
+        this.form.value.title,
+        this.form.value.description,
+        this.form.value.price
+      )
+      .subscribe(() => {
+        this.loadingCtrl.dismiss();
+        this.form.reset();
+        this.router.navigateByUrl('/places/tabs/offers');
+      });
   }
 }

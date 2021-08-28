@@ -1,24 +1,33 @@
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Subscription } from 'rxjs';
+
 import { Place } from './../places.model';
 import { PlacesService } from './../places.service';
-import { Component, OnInit } from '@angular/core';
-import { computeStackId } from '@ionic/angular/directives/navigation/stack-utils';
 
 @Component({
   selector: 'app-offers',
   templateUrl: './offers.page.html',
   styleUrls: ['./offers.page.scss'],
 })
-export class OffersPage implements OnInit {
+export class OffersPage implements OnInit, OnDestroy {
   offers: Place[] = [];
+  placeSub: Subscription;
 
   constructor(private placesService: PlacesService) {}
 
   ngOnInit() {
-    this.offers = this.placesService.places;
+    this.placeSub = this.placesService.places.subscribe((places) => {
+      this.offers = places;
+    });
   }
 
-  onEdit(offerId: string)
-  {
+  onEdit(offerId: string) {
     console.log(offerId);
+  }
+
+  ngOnDestroy() {
+    if (this.placeSub) {
+      this.placeSub.unsubscribe();
+    }
   }
 }

@@ -1,14 +1,17 @@
 <ion-header>
   <ion-toolbar>
-    <ion-title>{{place.name}}</ion-title>
+    <ion-title>{{place.title}}</ion-title>
     <ion-buttons slot="start">
       <ion-back-button defaultHref="/places/tabs/offers"></ion-back-button>
     </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
-<ion-content> 
-  <ion-button [routerLink]="['/',  'places','tabs', 'offers', 'edit', place.id]" color="primary">
+<ion-content>
+  <ion-button
+    [routerLink]="['/',  'places','tabs', 'offers', 'edit', place.id]"
+    color="primary"
+  >
     Edit Offer
   </ion-button>
 </ion-content>

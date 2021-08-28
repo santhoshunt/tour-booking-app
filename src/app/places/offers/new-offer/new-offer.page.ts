@@ -1,3 +1,9 @@
+import {
+  AlertController,
+  NavController,
+  LoadingController,
+} from '@ionic/angular';
+import { PlacesService } from './../../places.service';
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 
@@ -8,7 +14,12 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
 })
 export class NewOfferPage implements OnInit {
   form: FormGroup;
-  constructor() {}
+  constructor(
+    private placesService: PlacesService,
+    private navCtrl: NavController,
+    private alrtCtrl: AlertController,
+    private loadingCtrl: LoadingController
+  ) {}
 
   ngOnInit() {
     this.form = new FormGroup({
@@ -35,10 +46,37 @@ export class NewOfferPage implements OnInit {
     });
   }
 
+  async onCreateAlert() {
+    this.alrtCtrl
+      .create({
+        header: 'Success!',
+        message: 'Offer successfully added',
+        buttons: ['Ok'],
+      })
+      .then((alert) => alert.present());
+  }
+
   onCreateOffer() {
     if (!this.form.valid) {
       return;
     }
-    console.log(this.form);
+    this.loadingCtrl
+      .create({
+        message: 'Creating place ...',
+      })
+      .then((ele) => ele.present());
+    this.placesService
+      .addPlace(
+        this.form.value.title,
+        this.form.value.description,
+        +this.form.value.price,
+        new Date(this.form.value.dateFrom),
+        new Date(this.form.value.dateTo)
+      )
+      .subscribe(() => {
+        this.loadingCtrl.dismiss();
+        this.form.reset();
+        this.navCtrl.navigateBack('/places/tabs/offers');
+      });
   }
 }
