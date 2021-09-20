@@ -55,12 +55,9 @@ export class EditOfferPage implements OnInit {
   }
 
   onEditOffer() {
-    console.log('here');
     if (!this.form.valid) {
-      console.log(this.form);
       return;
     }
-    console.log('here');
     this.loadingCtrl
       .create({
         message: 'Updating Place...',

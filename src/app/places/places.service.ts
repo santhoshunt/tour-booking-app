@@ -30,7 +30,7 @@ export class PlacesService {
       price: 10000,
       fromDate: new Date('2021-12-31'),
       toDate: new Date('2022-12-31'),
-      userId: 'u1',
+      userId: 'u1 ',
     },
     {
       id: 'p3',
