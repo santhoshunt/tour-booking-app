@@ -1,7 +1,8 @@
+import { HttpClient } from '@angular/common/http';
 /* eslint-disable no-underscore-dangle */
 import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
-import { delay, map, take, tap } from 'rxjs/operators';
+import { delay, map, take, tap, switchMap } from 'rxjs/operators';
 
 import { AuthService } from './../auth/auth.service';
 import { Place } from './places.model';
@@ -46,7 +47,7 @@ export class PlacesService {
     },
   ]);
 
-  constructor(private authService: AuthService) {}
+  constructor(private authService: AuthService, private http: HttpClient) {}
 
   get places() {
     return this._places.asObservable();
@@ -66,6 +67,7 @@ export class PlacesService {
     dateFrom: Date,
     dateTo: Date
   ) {
+    let generatedId: string;
     const newPlace = new Place(
       title,
       Math.random().toString(),
@@ -76,13 +78,29 @@ export class PlacesService {
       dateTo,
       this.authService.getUserId()
     );
-    return this.places.pipe(
-      take(1),
-      delay(1000),
-      tap((places) => {
-        this._places.next(places.concat(newPlace));
-      })
-    );
+    return this.http
+      .post<{ name: string }>(
+        'https://booking-18946-default-rtdb.firebaseio.com/offered-places.json',
+        { ...newPlace, id: null }
+      )
+      .pipe(
+        switchMap((resData) => {
+          generatedId = resData.name;
+          return this.places;
+        }),
+        take(1),
+        tap((places) => {
+          newPlace.id = generatedId;
+          this._places.next(places.concat(newPlace));
+        })
+      );
+    // return this.places.pipe(
+    //   take(1),
+    //   delay(1000),
+    //   tap((places) => {
+    //     this._places.next(places.concat(newPlace));
+    //   })
+    // );
   }
 
   updateOffer(
