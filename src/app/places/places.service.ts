@@ -112,12 +112,12 @@ export class PlacesService {
     description: string,
     price: number
   ) {
+    let updatedPlaces: Place[];
     return this.places.pipe(
       take(1),
-      delay(1000),
-      tap((places: Place[]) => {
+      switchMap((places) => {
         const updatedPlaceIndex = places.findIndex((p) => p.id === placeId);
-        const updatedPlaces = [...places];
+        updatedPlaces = [...places];
         const oldPlace = updatedPlaces[updatedPlaceIndex];
         updatedPlaces[updatedPlaceIndex] = new Place(
           title,
@@ -129,9 +129,36 @@ export class PlacesService {
           oldPlace.toDate,
           oldPlace.userId
         );
+        return this.http.put(
+          `https://booking-18946-default-rtdb.firebaseio.com/offered-places/${placeId}.json`,
+          { ...updatedPlaces[updatedPlaceIndex], id: null }
+        );
+      }),
+      tap(() => {
         this._places.next(updatedPlaces);
       })
     );
+    // return this.places.pipe(
+    //   take(1),
+    //   delay(1000),
+    //   tap((places: Place[]) => {
+    //     const updatedPlaceIndex = places.findIndex((p) => p.id === placeId);
+    //     const updatedPlaces = [...places];
+    //     const oldPlace = updatedPlaces[updatedPlaceIndex];
+    //     updatedPlaces[updatedPlaceIndex] = new Place(
+    //       title,
+    //       oldPlace.id,
+    //       description,
+    //       oldPlace.imageUrl,
+    //       price,
+    //       oldPlace.fromDate,
+    //       oldPlace.toDate,
+    //       oldPlace.userId
+    //     );
+    //     this._places.next(updatedPlaces);
+
+    //   })
+    // );
   }
 }
 
