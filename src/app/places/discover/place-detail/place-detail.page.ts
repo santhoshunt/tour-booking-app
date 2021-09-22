@@ -19,6 +19,7 @@ import { CreateComponent } from './../../../bookings/create/create.component';
 })
 export class PlaceDetailPage implements OnInit, OnDestroy {
   place: Place;
+  isLoading = false;
   private placeSub: Subscription;
 
   constructor(
@@ -37,10 +38,14 @@ export class PlaceDetailPage implements OnInit, OnDestroy {
         this.navCtrl.navigateBack('/places/tabs/discover');
         return;
       }
+      this.isLoading = true;
+      console.log(paramMap.get('placeId'), this.isLoading);
       this.placeSub = this.placesService
         .getPlace(paramMap.get('placeId'))
         .subscribe((place) => {
           this.place = place;
+          this.isLoading = false;
+          console.log(paramMap.get('placeId'), this.isLoading);
         });
     });
     // this.place = this.placesService.getPlace()

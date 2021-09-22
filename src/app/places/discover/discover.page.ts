@@ -14,6 +14,7 @@ import { PlacesService } from './../places.service';
 export class DiscoverPage implements OnInit, OnDestroy {
   loadedPlaces: Place[] = [];
   relevantPlaces: Place[] = [];
+  isLoading = false;
   private loadedPlaceSub: Subscription;
 
   constructor(
@@ -28,14 +29,22 @@ export class DiscoverPage implements OnInit, OnDestroy {
     });
   }
 
+  ionViewWillEnter() {
+    this.isLoading = true;
+    this.placesService.fetchPlaces().subscribe(() => {
+      this.isLoading = false;
+    });
+  }
+
   ngOnDestroy() {
     if (this.loadedPlaceSub) {
       this.loadedPlaceSub.unsubscribe();
     }
   }
 
-  onFilterUpdate(event: CustomEvent<SegmentChangeEventDetail>) {
-    if (event.detail.value === 'all') {
+  onFilterUpdate(event: Event) {
+    const detail = (event as CustomEvent<SegmentChangeEventDetail>).detail;
+    if (detail.value === 'all') {
       this.relevantPlaces = this.loadedPlaces;
     } else {
       this.relevantPlaces = this.loadedPlaces.filter(

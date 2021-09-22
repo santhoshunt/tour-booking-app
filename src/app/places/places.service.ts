@@ -2,7 +2,7 @@
 import { HttpClient } from '@angular/common/http';
 /* eslint-disable no-underscore-dangle */
 import { Injectable } from '@angular/core';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, of } from 'rxjs';
 import { delay, map, take, tap, switchMap } from 'rxjs/operators';
 
 import { AuthService } from './../auth/auth.service';
@@ -31,10 +31,25 @@ export class PlacesService {
   }
 
   getPlace(id: string) {
-    return this.places.pipe(
-      take(1),
-      map((places) => ({ ...places.find((p) => p.id === id) }))
-    );
+    return this.http
+      .get<PlaceData>(
+        `https://booking-18946-default-rtdb.firebaseio.com/offered-places/${id}.json`
+      )
+      .pipe(
+        // eslint-disable-next-line arrow-body-style
+        map((placeData) => {
+          return new Place(
+            placeData.title,
+            id,
+            placeData.description,
+            placeData.imageUrl,
+            placeData.price,
+            new Date(placeData.fromDate),
+            new Date(placeData.toDate),
+            placeData.userId
+          );
+        })
+      );
   }
 
   fetchPlaces() {
@@ -115,6 +130,13 @@ export class PlacesService {
     let updatedPlaces: Place[];
     return this.places.pipe(
       take(1),
+      switchMap((places) => {
+        if (!places || places.length <= 0) {
+          return this.fetchPlaces();
+        } else {
+          return of(places);
+        }
+      }),
       switchMap((places) => {
         const updatedPlaceIndex = places.findIndex((p) => p.id === placeId);
         updatedPlaces = [...places];

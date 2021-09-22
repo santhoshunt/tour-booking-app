@@ -13,6 +13,8 @@ import { Component, OnInit } from '@angular/core';
 export class EditOfferPage implements OnInit {
   form: FormGroup;
   place: Place;
+  isLoading = false;
+  placeId: string;
 
   constructor(
     private navCtrl: NavController,
@@ -28,6 +30,8 @@ export class EditOfferPage implements OnInit {
         this.navCtrl.navigateBack('/places/tabs/offers');
         return;
       }
+      this.placeId = paramMap.get('placeId');
+      this.isLoading = true;
       this.placesService
         .getPlace(paramMap.get('placeId'))
         .subscribe((place) => {
@@ -46,6 +50,7 @@ export class EditOfferPage implements OnInit {
               validators: [Validators.required, Validators.min(1)],
             }),
           });
+          this.isLoading = false;
         });
     });
   }
