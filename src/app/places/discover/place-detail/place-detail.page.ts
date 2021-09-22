@@ -99,21 +99,21 @@ export class PlaceDetailPage implements OnInit, OnDestroy {
             .create({ message: 'Booking Place...' })
             .then((loadingEl) => {
               loadingEl.present();
-              const data = resultData.data.bookingData;
-              this.bookingService
-                .addBooking(
-                  this.place.id,
-                  this.place.title,
-                  data.firstName,
-                  data.lastName,
-                  data.startDate,
-                  data.endDate,
-                  data.guestNumber,
-                  this.place.imageUrl
-                )
-                .subscribe(() => {
-                  loadingEl.dismiss();
-                });
+            });
+          const data = resultData.data.bookingData;
+          this.bookingService
+            .addBooking(
+              this.place.id,
+              this.place.title,
+              data.firstName,
+              data.lastName,
+              data.startDate,
+              data.endDate,
+              data.guestNumber,
+              this.place.imageUrl
+            )
+            .subscribe(() => {
+              this.loadingCtrl.dismiss();
             });
         }
       });
