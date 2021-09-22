@@ -6,6 +6,7 @@ import {
   ModalController,
   NavController,
   LoadingController,
+  AlertController,
 } from '@ionic/angular';
 
 import { PlacesService } from './../../places.service';
@@ -23,13 +24,13 @@ export class PlaceDetailPage implements OnInit, OnDestroy {
   private placeSub: Subscription;
 
   constructor(
-    private router: Router,
     private navCtrl: NavController,
     private mdCtrl: ModalController,
     private placesService: PlacesService,
     private route: ActivatedRoute,
     private bookingService: BookingService,
-    private loadingCtrl: LoadingController
+    private loadingCtrl: LoadingController,
+    private alterCtrl: AlertController
   ) {}
 
   ngOnInit() {
@@ -42,11 +43,32 @@ export class PlaceDetailPage implements OnInit, OnDestroy {
       console.log(paramMap.get('placeId'), this.isLoading);
       this.placeSub = this.placesService
         .getPlace(paramMap.get('placeId'))
-        .subscribe((place) => {
-          this.place = place;
-          this.isLoading = false;
-          console.log(paramMap.get('placeId'), this.isLoading);
-        });
+        .subscribe(
+          (place) => {
+            this.place = place;
+            this.isLoading = false;
+            console.log(paramMap.get('placeId'), this.isLoading);
+          },
+          (error) => {
+            this.alterCtrl
+              .create({
+                header: 'Unexpected Error',
+                message: 'Unable to fetch place! please try again later.',
+                buttons: [
+                  {
+                    text: 'Okay',
+                    handler: () => {
+                      this.navCtrl.navigateBack('/places/tabs/discover');
+                    },
+                  },
+                ],
+                backdropDismiss: false,
+              })
+              .then((alertEl) => {
+                alertEl.present();
+              });
+          }
+        );
     });
     // this.place = this.placesService.getPlace()
   }

@@ -2,7 +2,11 @@ import { Place } from './../../places.model';
 import { PlacesService } from './../../places.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { NavController, LoadingController } from '@ionic/angular';
+import {
+  NavController,
+  LoadingController,
+  AlertController,
+} from '@ionic/angular';
 import { Component, OnInit } from '@angular/core';
 
 @Component({
@@ -21,7 +25,8 @@ export class EditOfferPage implements OnInit {
     private route: ActivatedRoute,
     private placesService: PlacesService,
     private loadingCtrl: LoadingController,
-    private router: Router
+    private router: Router,
+    private alertCtrl: AlertController
   ) {}
 
   ngOnInit() {
@@ -32,9 +37,8 @@ export class EditOfferPage implements OnInit {
       }
       this.placeId = paramMap.get('placeId');
       this.isLoading = true;
-      this.placesService
-        .getPlace(paramMap.get('placeId'))
-        .subscribe((place) => {
+      this.placesService.getPlace(paramMap.get('placeId')).subscribe(
+        (place) => {
           this.place = place;
           this.form = new FormGroup({
             title: new FormControl(this.place.title, {
@@ -51,7 +55,27 @@ export class EditOfferPage implements OnInit {
             }),
           });
           this.isLoading = false;
-        });
+        },
+        (error) => {
+          this.alertCtrl
+            .create({
+              header: 'Unexpected Error!',
+              message: 'Could not fetch place, please try again!',
+              buttons: [
+                {
+                  text: 'Okay',
+                  handler: () => {
+                    this.navCtrl.navigateBack('/places/tabs/offers');
+                  },
+                },
+              ],
+              backdropDismiss: false,
+            })
+            .then((alertEl) => {
+              alertEl.present();
+            });
+        }
+      );
     });
   }
 
