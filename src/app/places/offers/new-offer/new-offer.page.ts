@@ -79,4 +79,6 @@ export class NewOfferPage implements OnInit {
         this.navCtrl.navigateBack('/places/tabs/offers');
       });
   }
+
+  onImagePicked(imageData: string) {}
 }
