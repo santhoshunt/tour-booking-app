@@ -1,6 +1,7 @@
 import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
 import { Capacitor } from '@capacitor/core';
+import { Platform } from '@ionic/angular';
 
 @Component({
   selector: 'app-image-picker',
@@ -10,10 +11,22 @@ import { Capacitor } from '@capacitor/core';
 export class ImagePickerComponent implements OnInit {
   @Output() imagePick = new EventEmitter<string>();
   selectedImg: string;
+  userPicker = false;
 
-  constructor() {}
+  constructor(private platform: Platform) {}
 
-  ngOnInit() {}
+  ngOnInit() {
+    console.log('mobile: ', this.platform.is('mobile'));
+    console.log('hybrid: ', this.platform.is('hybrid'));
+    console.log('android: ', this.platform.is('android'));
+    console.log('ios: ', this.platform.is('ios'));
+    console.log('desktop: ', this.platform.is('desktop'));
+    if (
+      (this.platform.is('mobile') && this.platform.is('hybrid')) ||
+      this.platform.is('desktop')
+    ) {
+    }
+  }
 
   onPickImage() {
     if (!Capacitor.isPluginAvailable('Camera')) {
